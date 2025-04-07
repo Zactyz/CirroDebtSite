@@ -123,7 +123,7 @@ function initNavigation() {
 
 // Scroll Reveal Animation
 function initScrollReveal() {
-    const elements = document.querySelectorAll('.feature-card, .step, .dashboard-image, .pricing-card, .faq-accordion-item, .contact-card');
+    const elements = document.querySelectorAll('.feature-card, .step, .dashboard-image, .pricing-card, .faq-accordion-item, .contact-card, .benefit-card');
     
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -159,6 +159,11 @@ function initScrollReveal() {
         .feature-card:nth-child(3) { transition-delay: 0.3s; }
         .feature-card:nth-child(4) { transition-delay: 0.4s; }
         .feature-card:nth-child(5) { transition-delay: 0.5s; }
+        .benefit-card:nth-child(1) { transition-delay: 0.1s; }
+        .benefit-card:nth-child(2) { transition-delay: 0.2s; }
+        .benefit-card:nth-child(3) { transition-delay: 0.3s; }
+        .benefit-card:nth-child(4) { transition-delay: 0.4s; }
+        .benefit-card:nth-child(5) { transition-delay: 0.5s; }
         .pricing-card:nth-child(1) { transition-delay: 0.1s; }
         .pricing-card:nth-child(2) { transition-delay: 0.2s; }
         .pricing-card:nth-child(3) { transition-delay: 0.3s; }
@@ -245,55 +250,120 @@ function initFaqAccordion() {
  * Initialize How It Works section with scroll animations
  */
 function initHowItWorks() {
-    const stepsContainer = document.querySelector('.steps-container');
+    const processSteps = document.querySelectorAll('.process-step');
+    const howItWorksSection = document.querySelector('.how-it-works');
     
-    // If How It Works section doesn't exist on this page, exit
-    if (!stepsContainer) return;
+    if (!howItWorksSection || processSteps.length === 0) return;
     
-    const steps = document.querySelectorAll('.step');
-    
-    // Create Intersection Observer
-    const stepObserver = new IntersectionObserver((entries) => {
+    // Set up intersection observer for steps reveal
+    const stepsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            // Add revealed class when step comes into view
             if (entry.isIntersecting) {
-                entry.target.classList.add('revealed');
+                // Delay each step animation based on its position
+                const step = entry.target;
+                const stepNumber = step.getAttribute('data-step');
+                const delay = parseInt(stepNumber) * 200;
                 
-                // Optional: Stop observing after revealing
-                // stepObserver.unobserve(entry.target);
-            } else {
-                // Optional: Remove class when out of view for reappearing effect
-                // entry.target.classList.remove('revealed');
+                setTimeout(() => {
+                    step.classList.add('revealed');
+                }, delay);
             }
         });
     }, {
-        root: null, // viewport
-        threshold: 0.15, // trigger when 15% visible
-        rootMargin: '-100px 0px' // trigger when 100px into viewport
+        threshold: 0.2,
+        rootMargin: '0px 0px -100px 0px'
     });
     
-    // Observe each step
-    steps.forEach(step => {
-        stepObserver.observe(step);
+    // Observe each process step
+    processSteps.forEach(step => {
+        stepsObserver.observe(step);
     });
     
-    // Add parallax effect to icons if user's device supports it
-    if (window.matchMedia('(min-width: 992px)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        const stepIcons = document.querySelectorAll('.step-icon');
+    // Add hover effects to step cards
+    processSteps.forEach(step => {
+        const stepCard = step.querySelector('.step-card');
+        const stepIndicator = step.querySelector('.step-indicator');
         
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            
-            stepIcons.forEach((icon, index) => {
-                // Create different parallax speeds based on index
-                const speed = index % 2 === 0 ? 0.05 : -0.05;
-                const yPos = scrollY * speed;
-                
-                // Apply transformation
-                icon.style.transform = `translateY(${yPos}px)`;
+        if (stepCard && stepIndicator) {
+            // Sync hover states between the card and indicator
+            stepCard.addEventListener('mouseenter', () => {
+                stepIndicator.classList.add('active');
             });
+            
+            stepCard.addEventListener('mouseleave', () => {
+                stepIndicator.classList.remove('active');
+            });
+            
+            // Add pulse animation to step number on hover
+            const stepNumber = step.querySelector('.step-number');
+            if (stepNumber) {
+                stepCard.addEventListener('mouseenter', () => {
+                    stepNumber.classList.add('pulse');
+                });
+                
+                stepCard.addEventListener('mouseleave', () => {
+                    stepNumber.classList.remove('pulse');
+                });
+            }
+        }
+    });
+    
+    // Add tracking for scroll progress on the timeline
+    const timelineTrack = document.querySelector('.timeline-track');
+    if (timelineTrack) {
+        const progressFill = document.createElement('div');
+        progressFill.classList.add('timeline-progress');
+        timelineTrack.appendChild(progressFill);
+        
+        // Update timeline progress on scroll
+        window.addEventListener('scroll', () => {
+            const rect = howItWorksSection.getBoundingClientRect();
+            const sectionHeight = howItWorksSection.offsetHeight;
+            const windowHeight = window.innerHeight;
+            const scrollPercentage = Math.max(0, Math.min(1, 
+                (windowHeight - rect.top) / (sectionHeight + windowHeight - 200)
+            ));
+            
+            progressFill.style.width = (scrollPercentage * 100) + '%';
         });
     }
+    
+    // Add CSS for dynamic elements
+    const style = document.createElement('style');
+    style.textContent = `
+        .timeline-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: var(--primary-color);
+            border-radius: 4px;
+            transition: width 0.1s ease-out;
+        }
+        
+        .step-indicator.active .step-number {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 155, 14, 0.5);
+        }
+        
+        .step-number.pulse {
+            animation: step-pulse 1.5s infinite;
+        }
+        
+        @keyframes step-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 155, 14, 0.5);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(255, 155, 14, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 155, 14, 0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 /**
@@ -301,6 +371,7 @@ function initHowItWorks() {
  * Apple-style pin and reveal
  */
 function initBenefitsScroll() {
+    // Check if benefits scroll section exists (it's commented out in the temporary version)
     const benefitsSection = document.querySelector('.benefits-scroll');
     if (!benefitsSection) return;
 
@@ -316,7 +387,7 @@ function initBenefitsScroll() {
     // Exit if required elements don't exist
     if (!benefitsPanels || !panels.length) return;
     
-    // Set up panels in replacement mode instead of stack mode
+    // Set up panels in replacement mode
     benefitsPanels.classList.remove('stack-mode');
     benefitsPanels.classList.add('replace-mode');
     
@@ -337,125 +408,178 @@ function initBenefitsScroll() {
     
     // Constants for animation control
     const TOTAL_PANELS = panels.length;
-    const PANEL_SEGMENT = 0.15; // Each panel occupies 15% of the scroll space
+    
+    // Reset all panels to initial state
+    function resetPanels() {
+        panels.forEach(panel => {
+            panel.classList.remove('active', 'fixed');
+            panel.style.transform = '';
+            panel.style.opacity = '0';
+        });
+    }
     
     // Set initial panel states
-    panels.forEach((panel, index) => {
-        panel.setAttribute('data-index', index);
-    });
+    resetPanels();
     
     // Update positions and visibility based on scroll
     function updatePanels() {
         const scrollTop = window.scrollY;
-        const scrollBottom = scrollTop + viewportHeight;
         
-        // Calculate normalized scroll progress (0 to 1)
-        // Get the relative position within the section
-        const relativeScrollPosition = scrollTop - (sectionTop - viewportHeight);
-        const normalizedScrollPosition = relativeScrollPosition / (sectionHeight + viewportHeight);
-        const scrollProgress = Math.max(0, Math.min(1, normalizedScrollPosition));
+        // Get the current section position relative to viewport
+        const sectionRect = benefitsSection.getBoundingClientRect();
         
-        // Determine if we're in the actual sticky phase (between 20% and 80% of scroll progress)
-        const isInStickZone = scrollProgress > 0.2 && scrollProgress < 0.8;
-        const isBeforeStickZone = scrollProgress <= 0.2;
-        const isAfterStickZone = scrollProgress >= 0.8;
+        // Calculate section top and bottom positions
+        const sectionTopToViewportTop = sectionRect.top;
+        const sectionBottomToViewportTop = sectionRect.bottom;
         
-        // Handle scroll progress bar fill
-        if (progressFill) {
-            // Only show progress during the middle 60% of the scroll
-            const progressFillAmount = Math.max(0, Math.min(1, (scrollProgress - 0.2) / 0.6));
-            progressFill.style.height = `${progressFillAmount * 100}%`;
+        // Calculate transition thresholds for smoother phase changes
+        // We'll use these for gradual transitions between phases
+        const enterThreshold = viewportHeight * 0.6; // When section is 60% into viewport from top
+        const stickyThreshold = 0; // When section top reaches viewport top
+        const exitThreshold = viewportHeight; // When section bottom reaches viewport bottom
+        
+        // Calculate normalized scroll progress (0 to 1) through the entire section
+        const totalScrollDistance = sectionHeight + viewportHeight;
+        const scrollProgress = Math.max(0, Math.min(1, 
+            (scrollTop - (sectionTop - viewportHeight)) / totalScrollDistance
+        ));
+        
+        // More granular phase detection with transition ranges
+        const enteringPhaseProgress = Math.max(0, Math.min(1, 
+            (enterThreshold - sectionTopToViewportTop) / enterThreshold
+        ));
+        
+        const exitingPhaseProgress = Math.max(0, Math.min(1,
+            (sectionBottomToViewportTop - (viewportHeight - 100)) / 100
+        ));
+        
+        // Determine phase with improved detection
+        let scrollPhase;
+        if (sectionTopToViewportTop > enterThreshold) {
+            scrollPhase = 'before'; // Section is mostly below viewport
+        } else if (sectionTopToViewportTop > stickyThreshold) {
+            scrollPhase = 'entering'; // Section is entering viewport
+        } else if (sectionBottomToViewportTop > exitThreshold) {
+            scrollPhase = 'sticky'; // Section is in sticky phase
+        } else if (sectionBottomToViewportTop > 0) {
+            scrollPhase = 'exiting'; // Section is exiting viewport
+        } else {
+            scrollPhase = 'after'; // Section is above viewport
         }
         
-        // Show/hide progress container based on whether we're in the stick zone
-        if (progressContainer) {
-            progressContainer.style.opacity = isInStickZone ? '1' : '0';
-            progressContainer.style.visibility = isInStickZone ? 'visible' : 'hidden';
-        }
-        
-        // Show/hide parallax background based on whether we're in the stick zone
-        if (parallaxBg) {
-            parallaxBg.style.opacity = isInStickZone ? '1' : '0';
-        }
-        
-        // Apply different behaviors based on scroll zone
-        if (isBeforeStickZone) {
-            // In the "scroll in" zone (first 20% of section)
-            
-            // Calculate how far we've scrolled into the entrance zone (0-1)
-            const entranceProgress = scrollProgress / 0.2;
-            
-            // Handle section header during entrance
-            if (benefitsHeader) {
+        // Handle smooth transitions for header and progress bar based on phase
+        if (benefitsHeader) {
+            if (scrollPhase === 'entering') {
+                // Smooth transition from normal scroll to fixed
+                const topPosition = Math.max(0, sectionTopToViewportTop * (1 - enteringPhaseProgress));
                 benefitsHeader.style.position = 'relative';
-                benefitsHeader.style.transform = `translateY(${(1 - entranceProgress) * 50}px)`;
-                benefitsHeader.style.opacity = entranceProgress;
-            }
-            
-            // Remove sticky states as we're scrolling in naturally
-            panels.forEach(panel => {
-                panel.classList.remove('fixed', 'active');
-                panel.style.opacity = 0;
-            });
-            
-            // Set first panel to start appearing as we approach stick zone
-            if (entranceProgress > 0.5 && panels[0]) {
-                panels[0].classList.add('active');
-                panels[0].style.opacity = (entranceProgress - 0.5) * 2;
-                panels[0].style.transform = `translateY(${(1 - entranceProgress) * 30}px)`;
-            }
-            
-        } else if (isInStickZone) {
-            // In the "sticky" zone (middle 60% of section)
-            
-            // Calculate panel activation progress (0-1 within the middle 60%)
-            const panelProgress = (scrollProgress - 0.2) / 0.6;
-            
-            // Header is fully visible and fixed
-            if (benefitsHeader) {
+                benefitsHeader.style.top = '0';
+                benefitsHeader.style.transform = `translateY(${topPosition}px)`;
+                benefitsHeader.style.opacity = Math.min(1, enteringPhaseProgress * 1.5);
+            } else if (scrollPhase === 'sticky') {
+                // Fully fixed in sticky phase
                 benefitsHeader.style.position = 'fixed';
                 benefitsHeader.style.top = '0';
-                benefitsHeader.style.transform = 'translateY(0)';
+                benefitsHeader.style.transform = 'none';
                 benefitsHeader.style.opacity = '1';
+            } else if (scrollPhase === 'exiting') {
+                // Smooth transition from fixed to normal scroll
+                benefitsHeader.style.position = 'relative';
+                const headerOffset = sectionHeight - viewportHeight + (sectionTopToViewportTop);
+                benefitsHeader.style.top = `${headerOffset}px`;
+                benefitsHeader.style.transform = 'none';
+                benefitsHeader.style.opacity = Math.max(0, 1 - exitingPhaseProgress);
+            } else {
+                // Hidden when out of view
+                benefitsHeader.style.opacity = '0';
             }
-            
-            // Since we're replacing panels, first reset all of them
-            panels.forEach(panel => {
-                panel.classList.remove('active', 'fixed');
-                panel.style.opacity = 0;
-                panel.style.transform = 'translateY(30px)';
-            });
-            
-            // Determine which panel should be active based on panel progress
+        }
+        
+        // Handle progress container with smooth transitions
+        if (progressContainer) {
+            if (scrollPhase === 'entering') {
+                // Progressively reveal and position progress bar during entrance
+                progressContainer.style.position = 'absolute';
+                progressContainer.style.top = `${50 + (1 - enteringPhaseProgress) * 25}%`;
+                progressContainer.style.opacity = enteringPhaseProgress.toString();
+                progressContainer.style.visibility = 'visible';
+                progressContainer.style.transform = 'translateY(-50%)';
+            } else if (scrollPhase === 'sticky') {
+                // Fixed position during sticky phase
+                progressContainer.style.position = 'fixed';
+                progressContainer.style.top = '50%';
+                progressContainer.style.opacity = '1';
+                progressContainer.style.visibility = 'visible';
+                progressContainer.style.transform = 'translateY(-50%)';
+            } else if (scrollPhase === 'exiting') {
+                // Smooth exit transition
+                progressContainer.style.position = 'absolute';
+                const progressOffset = sectionHeight - viewportHeight + (sectionTopToViewportTop);
+                progressContainer.style.top = `${progressOffset + viewportHeight/2}px`;
+                progressContainer.style.opacity = (1 - exitingPhaseProgress).toString();
+                progressContainer.style.visibility = 'visible';
+                progressContainer.style.transform = 'translateY(-50%)';
+            } else {
+                // Hidden when out of view
+                progressContainer.style.opacity = '0';
+                progressContainer.style.visibility = 'hidden';
+            }
+        }
+        
+        // Handle progress fill based on scroll phase
+        if (progressFill) {
+            if (scrollPhase === 'entering') {
+                // Gradually start filling at beginning
+                progressFill.style.height = `${enteringPhaseProgress * 15}%`;
+            } else if (scrollPhase === 'sticky') {
+                // Fill based on progress through panels
+                const panelProgress = Math.min(TOTAL_PANELS - 1, Math.floor(scrollProgress * TOTAL_PANELS * 1.2)) / (TOTAL_PANELS - 1);
+                progressFill.style.height = `${15 + panelProgress * 85}%`; // Start from 15% (where entering phase left off)
+            } else if (scrollPhase === 'exiting') {
+                // Keep full during exit
+                progressFill.style.height = '100%';
+            } else {
+                // Reset when out of view
+                progressFill.style.height = '0%';
+            }
+        }
+        
+        // Handle background parallax with smooth transitions
+        if (parallaxBg) {
+            if (scrollPhase === 'entering') {
+                parallaxBg.style.opacity = enteringPhaseProgress.toString();
+            } else if (scrollPhase === 'sticky') {
+                parallaxBg.style.opacity = '1';
+            } else if (scrollPhase === 'exiting') {
+                parallaxBg.style.opacity = (1 - exitingPhaseProgress).toString();
+            } else {
+                parallaxBg.style.opacity = '0';
+            }
+        }
+        
+        // Handle panel visibility and position
+        if (scrollPhase === 'sticky') {
+            // Calculate which panel should be visible based on progress
             const activeIndex = Math.min(
-                Math.floor(panelProgress * TOTAL_PANELS), 
-                TOTAL_PANELS - 1
+                TOTAL_PANELS - 1,
+                Math.floor(scrollProgress * TOTAL_PANELS * 1.2)
             );
             
-            // Calculate cross-fade between panels
-            const panelSegmentSize = 1 / TOTAL_PANELS;
-            const inSegmentProgress = (panelProgress - (activeIndex * panelSegmentSize)) / panelSegmentSize;
-            
-            // Show current panel
-            if (panels[activeIndex]) {
-                const currentPanel = panels[activeIndex];
-                currentPanel.classList.add('active', 'fixed');
-                currentPanel.style.opacity = 1;
-                currentPanel.style.transform = 'translateY(0)';
-            }
-            
-            // If we're transitioning to the next panel, start fading it in
-            if (inSegmentProgress > 0.7 && activeIndex < TOTAL_PANELS - 1) {
-                const nextPanel = panels[activeIndex + 1];
-                if (nextPanel) {
-                    const fadeInAmount = (inSegmentProgress - 0.7) / 0.3;
-                    nextPanel.classList.add('active', 'fixed');
-                    nextPanel.style.opacity = fadeInAmount;
-                    nextPanel.style.transform = `translateY(${(1 - fadeInAmount) * 30}px)`;
+            // Update all panels
+            panels.forEach((panel, index) => {
+                // Reset panel state
+                panel.classList.remove('active', 'fixed');
+                panel.style.opacity = '0';
+                
+                // Show active panel
+                if (index === activeIndex) {
+                    panel.classList.add('active', 'fixed');
+                    panel.style.opacity = '1';
+                    panel.style.transform = 'translateY(0)';
                 }
-            }
+            });
             
-            // Update marker states based on current progress
+            // Update markers based on active panel
             markers.forEach((marker, index) => {
                 marker.classList.remove('active', 'viewed');
                 
@@ -467,34 +591,59 @@ function initBenefitsScroll() {
                     marker.classList.add('active');
                 }
             });
+        } else if (scrollPhase === 'entering') {
+            // Smooth entrance for first panel
+            const entranceProgress = enteringPhaseProgress;
             
-        } else if (isAfterStickZone) {
-            // In the "scroll out" zone (last 20% of section)
-            
-            // Calculate exit progress (0-1 in the exit zone)
-            const exitProgress = (scrollProgress - 0.8) / 0.2;
-            
-            // Header starts scrolling out
-            if (benefitsHeader) {
-                benefitsHeader.style.position = 'relative';
-                benefitsHeader.style.top = `${-50 * exitProgress}px`;
-                benefitsHeader.style.opacity = Math.max(0, 1 - exitProgress * 1.5);
-            }
-            
-            // Show only the last panel and have it scroll out naturally
             panels.forEach((panel, index) => {
-                panel.classList.remove('fixed');
+                panel.classList.remove('active', 'fixed');
+                panel.style.opacity = '0';
+                
+                if (index === 0) {
+                    panel.classList.add('active');
+                    panel.style.opacity = entranceProgress.toString();
+                    panel.style.transform = `translateY(${(1 - entranceProgress) * 20}px)`;
+                }
+            });
+            
+            // Update first marker
+            markers.forEach((marker, index) => {
+                marker.classList.remove('active', 'viewed');
+                
+                if (index === 0 && entranceProgress > 0.5) {
+                    marker.classList.add('active', 'viewed');
+                }
+            });
+        } else if (scrollPhase === 'exiting') {
+            // Smooth exit for last panel
+            const exitProgress = exitingPhaseProgress;
+            
+            panels.forEach((panel, index) => {
+                panel.classList.remove('fixed', 'active');
+                panel.style.opacity = '0';
                 
                 if (index === TOTAL_PANELS - 1) {
-                    // Last panel scrolls out
                     panel.classList.add('active');
-                    panel.style.transform = `translateY(${-30 * exitProgress}px)`;
-                    panel.style.opacity = Math.max(0, 1 - exitProgress * 1.5);
-                } else {
-                    // Hide all other panels
-                    panel.classList.remove('active');
-                    panel.style.opacity = 0;
+                    panel.style.opacity = (1 - exitProgress).toString();
+                    panel.style.transform = 'translateY(0)';
                 }
+            });
+            
+            // Keep all markers viewed with last one active
+            markers.forEach((marker, index) => {
+                marker.classList.add('viewed');
+                marker.classList.remove('active');
+                
+                if (index === TOTAL_PANELS - 1) {
+                    marker.classList.add('active');
+                }
+            });
+        } else {
+            // When completely out of view, reset everything
+            resetPanels();
+            
+            markers.forEach(marker => {
+                marker.classList.remove('active', 'viewed');
             });
         }
     }
@@ -502,15 +651,12 @@ function initBenefitsScroll() {
     // Add click events to markers for jumping to sections
     markers.forEach((marker, index) => {
         marker.addEventListener('click', () => {
-            // Calculate position in the scroll sequence based on panel index
-            const panelProgress = (index / TOTAL_PANELS);
-            // Convert to overall scroll progress (adding 0.2 for entrance and multiplying by 0.6 for middle section)
-            const targetProgress = 0.2 + (panelProgress * 0.6);
-            // Calculate the actual scroll position
-            const targetPosition = sectionTop - viewportHeight + (targetProgress * (sectionHeight + viewportHeight));
+            // Calculate position based on section and panel index
+            const panelScrollPosition = sectionTop - viewportHeight * 0.5 + 
+                ((index / TOTAL_PANELS) * sectionHeight * 0.7) + viewportHeight * 0.1;
             
             window.scrollTo({
-                top: targetPosition,
+                top: panelScrollPosition,
                 behavior: 'smooth'
             });
         });
@@ -519,8 +665,15 @@ function initBenefitsScroll() {
     // Initialize position on load
     updatePanels();
     
-    // Update on scroll
-    window.addEventListener('scroll', updatePanels);
+    // Update on scroll with throttling for better performance
+    let lastScrollTime = 0;
+    window.addEventListener('scroll', () => {
+        const now = Date.now();
+        if (now - lastScrollTime > 10) { // 10ms throttle
+            lastScrollTime = now;
+            requestAnimationFrame(updatePanels);
+        }
+    });
     
     // Handle resize events
     window.addEventListener('resize', () => {
