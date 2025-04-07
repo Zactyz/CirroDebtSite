@@ -1,0 +1,88 @@
+/* ========================================
+   🌗 SHARED COLOR BASE — Always Present
+   ======================================== */
+:root {
+  --color-primary: #ff9b0e;     /* orange-peel */
+  --color-primary-alt: #fd9e0e; /* orange-peel-2 */
+  --color-accent: #c17f15;     /* dark-goldenrod */
+  --color-secondary: #0a1d2e;  /* oxford-blue */
+  --color-silver: #c4c6c6;     /* silver */
+  --color-black-olive: #464136;
+}
+
+/* ========================================
+   🌙 DARK MODE — Rich, moody, vibrant orange
+   ======================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0e1e29;            /* rich-black */
+    --color-surface: #151f27;       /* rich-black-3 */
+    --color-surface-alt: #13202c;   /* rich-black-4 */
+    --color-text: #c4c6c6;          /* silver */
+    --color-text-muted: #8b8e8e;
+    --color-border: #464136;        /* black-olive */
+    --color-link: #ff9b0e;
+    --color-highlight: #fd9e0e;
+    --color-contrast: #0effc1;      /* added: complementary teal for bright UI elements */
+  }
+}
+
+/* ========================================
+   ☀️ LIGHT MODE — Clean, still warm and bold
+   ======================================== */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-bg: #ffffff;
+    --color-surface: #f4f6f8;
+    --color-surface-alt: #eaecec;
+    --color-text: #1e1e1e;
+    --color-text-muted: #555;
+    --color-border: #d0d0d0;
+    --color-link: #c17f15;
+    --color-highlight: #ff9b0e;
+    --color-contrast: #0a1d2e;    /* oxford-blue as deep accent */
+  }
+}
+🧠 Notes
+--color-primary and --color-accent use your exact orange-peel and dark-goldenrod.
+
+--color-secondary and --color-contrast bring in the deep blue-teal for balance.
+
+Light mode is not a simple invert — it keeps your vibe but makes content accessible and bright without losing warmth.
+
+Dark mode is rich, cozy, glowing with orange highlights.
+
+✅ Usage Examples
+css
+Copy
+Edit
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.card {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+a {
+  color: var(--color-link);
+}
+
+button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-bg);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button.primary:hover {
+  background-color: var(--color-primary-alt);
+}

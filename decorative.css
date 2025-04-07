@@ -1,0 +1,381 @@
+/* Decorative Elements CSS for Cirro Debt
+ * This file contains decorative elements and styling 
+ * inspired by YNAB.com's modern design approach
+ */
+
+/* ===== Base Variables ===== */
+:root {
+  /* Soft color variants for gradients and effects */
+  --primary-soft: #ffead8;
+  --primary-soft-2: #fff0e5;
+  --primary-soft-3: #fff5ef;
+  --primary-gradient: linear-gradient(135deg, var(--primary-color) 0%, #ff8f3f 100%);
+  --primary-glow: 0 0 20px rgba(255, 114, 20, 0.2);
+  
+  /* Secondary accent colors */
+  --accent-teal: #0fd9c3;
+  --accent-blue: #3e95ff;
+  --accent-purple: #8864f0;
+  
+  /* Pattern colors */
+  --pattern-light: rgba(255, 255, 255, 0.03);
+  --pattern-dark: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] {
+  --primary-soft: #3f2e24;
+  --primary-soft-2: #4a372c;
+  --primary-soft-3: #543e31;
+  --pattern-light: rgba(255, 255, 255, 0.03);
+  --pattern-dark: rgba(255, 255, 255, 0.02);
+}
+
+/* ===== Section Enhancements ===== */
+.section-enhanced {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Hero title enhancements */
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: var(--primary-glow);
+}
+
+.hero-title .highlight {
+  position: relative;
+  z-index: 1;
+  color: var(--primary-color);
+  -webkit-text-fill-color: var(--primary-color);
+}
+
+.hero-title .highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -5%;
+  width: 110%;
+  height: 30%;
+  background-color: var(--primary-soft);
+  z-index: -1;
+  border-radius: 4px;
+  transform: rotate(-2deg);
+}
+
+[data-theme="dark"] .hero-title .highlight::after {
+  opacity: 0.3;
+}
+
+/* ===== Decorative Shapes ===== */
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  z-index: -1;
+  opacity: 0.6;
+  animation: float 6s ease-in-out infinite;
+}
+
+.shape-circle {
+  background: var(--primary-gradient);
+  box-shadow: var(--primary-glow);
+}
+
+.shape-small {
+  width: 60px;
+  height: 60px;
+}
+
+.shape-medium {
+  width: 120px;
+  height: 120px;
+}
+
+.shape-dollar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--primary-color);
+  animation: float-rotate 8s ease-in-out infinite;
+  opacity: 0.2;
+}
+
+/* Hero section shapes */
+.hero-shapes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.hero-shape-1 {
+  top: 10%;
+  left: 5%;
+  animation-delay: 0s;
+  opacity: 0.3;
+}
+
+.hero-shape-2 {
+  top: 70%;
+  left: 15%;
+  animation-delay: 1s;
+  opacity: 0.2;
+}
+
+.hero-shape-3 {
+  top: 20%;
+  right: 10%;
+  animation-delay: 2s;
+  opacity: 0.2;
+}
+
+.hero-shape-4 {
+  bottom: 20%;
+  right: 5%;
+  animation-delay: 3s;
+  opacity: 0.3;
+}
+
+.hero-dollar-1 {
+  top: 30%;
+  left: 30%;
+  animation-delay: 1.5s;
+}
+
+.hero-dollar-2 {
+  top: 60%;
+  right: 25%;
+  animation-delay: 2.5s;
+}
+
+.hero-dollar-3 {
+  top: 15%;
+  right: 30%;
+  animation-delay: 3.5s;
+}
+
+/* ===== Background Patterns ===== */
+.bg-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.bg-dots {
+  background-image: radial-gradient(var(--pattern-dark) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.bg-grid {
+  background-image: 
+    linear-gradient(var(--pattern-dark) 1px, transparent 1px),
+    linear-gradient(to right, var(--pattern-dark) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Features background enhancements */
+.features-bg {
+  background-color: var(--primary-soft-3);
+}
+
+[data-theme="dark"] .features-bg {
+  background-color: var(--bg-color-dark);
+}
+
+/* ===== Wave Dividers ===== */
+.wave-divider {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  z-index: 2;
+}
+
+.wave-bottom {
+  bottom: -1px;
+}
+
+.wave-divider svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 80px;
+}
+
+/* Wave variants */
+.wave-white .shape-fill {
+  fill: var(--bg-color);
+}
+
+.wave-alt .shape-fill {
+  fill: var(--primary-soft-3);
+}
+
+.wave-primary .shape-fill {
+  fill: var(--primary-soft);
+}
+
+[data-theme="dark"] .wave-white .shape-fill {
+  fill: var(--bg-color-dark);
+}
+
+[data-theme="dark"] .wave-alt .shape-fill {
+  fill: var(--bg-color);
+}
+
+[data-theme="dark"] .wave-primary .shape-fill {
+  fill: var(--bg-color);
+  opacity: 0.8;
+}
+
+/* ===== Animation Keyframes ===== */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes float-rotate {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(10deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+/* ===== Enhanced Feature Cards ===== */
+.feature-card {
+  border-radius: 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 2rem;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .feature-card {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .feature-card:hover {
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.feature-icon {
+  background: var(--primary-gradient);
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: white;
+  box-shadow: var(--primary-glow);
+}
+
+/* ===== Steps Enhancement ===== */
+.steps {
+  position: relative;
+}
+
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 2.5rem;
+  width: 2px;
+  background: var(--primary-gradient);
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.step {
+  position: relative;
+  z-index: 1;
+}
+
+.step-number {
+  position: relative;
+  background: var(--primary-gradient);
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: white;
+  box-shadow: var(--primary-glow);
+  margin-bottom: 1rem;
+  z-index: 2;
+}
+
+/* ===== Media Queries ===== */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .wave-divider svg {
+    height: 50px;
+  }
+  
+  .steps::before {
+    left: 1.5rem;
+  }
+  
+  .step-number {
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .hero-shape-1,
+  .hero-shape-3 {
+    display: none;
+  }
+  
+  .wave-divider svg {
+    height: 30px;
+  }
+} 
