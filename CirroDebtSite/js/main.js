@@ -297,108 +297,218 @@ function initHowItWorks() {
 }
 
 /**
- * Initialize Benefits Scrolling Experience with Pin-and-Reveal effect
+ * Initialize Benefits Scrolling Experience
+ * Apple-style pin and reveal
  */
 function initBenefitsScroll() {
     const benefitsSection = document.querySelector('.benefits-scroll');
-    
-    // If the benefits scroll section doesn't exist on this page, exit
     if (!benefitsSection) return;
-    
-    const benefitsContainer = document.querySelector('.benefits-scroll-container');
+
+    const benefitsPanels = document.querySelector('.benefit-panels');
+    const benefitsHeader = document.querySelector('.benefits-header');
     const panels = document.querySelectorAll('.benefit-panel');
-    const progressFill = document.querySelector('.scroll-progress-filled');
+    const progressContainer = document.querySelector('.scroll-progress-container');
+    const progressFill = document.querySelector('.scroll-progress-fill');
     const markers = document.querySelectorAll('.progress-marker');
-    const continueButton = document.querySelector('.benefits-continue');
-    const parallaxShapes = document.querySelectorAll('.benefits-shape, .benefits-parallax-bg .shape');
+    const continueBtn = document.querySelector('.benefits-continue');
+    const parallaxBg = document.querySelector('.benefits-parallax-bg');
     
-    // Calculate section dimensions
-    const numPanels = panels.length;
-    const windowHeight = window.innerHeight;
+    // Exit if required elements don't exist
+    if (!benefitsPanels || !panels.length) return;
     
-    // Set total scroll height (one screen height per panel plus one to exit)
-    const totalScrollHeight = (numPanels + 1) * windowHeight;
-    benefitsSection.style.height = `${totalScrollHeight}px`;
+    // Set up panels in replacement mode instead of stack mode
+    benefitsPanels.classList.remove('stack-mode');
+    benefitsPanels.classList.add('replace-mode');
     
-    // Update section based on scroll position
-    function updateBenefitsSection() {
+    // Variables for dimensions that can change
+    let sectionHeight = benefitsSection.offsetHeight;
+    let viewportHeight = window.innerHeight;
+    let sectionTop, sectionBottom;
+    
+    // Update section boundaries
+    function updateBoundaries() {
+        const rect = benefitsSection.getBoundingClientRect();
+        sectionTop = window.scrollY + rect.top;
+        sectionBottom = sectionTop + sectionHeight;
+    }
+    
+    // Initialize boundaries
+    updateBoundaries();
+    
+    // Constants for animation control
+    const TOTAL_PANELS = panels.length;
+    const PANEL_SEGMENT = 0.15; // Each panel occupies 15% of the scroll space
+    
+    // Set initial panel states
+    panels.forEach((panel, index) => {
+        panel.setAttribute('data-index', index);
+    });
+    
+    // Update positions and visibility based on scroll
+    function updatePanels() {
         const scrollTop = window.scrollY;
-        const sectionTop = benefitsSection.offsetTop;
-        const sectionBottom = sectionTop + benefitsSection.offsetHeight;
-        const scrollPosition = scrollTop - sectionTop;
+        const scrollBottom = scrollTop + viewportHeight;
         
-        // If we're not in the section, don't update
-        if (scrollTop < sectionTop || scrollTop > sectionBottom) return;
+        // Calculate normalized scroll progress (0 to 1)
+        // Get the relative position within the section
+        const relativeScrollPosition = scrollTop - (sectionTop - viewportHeight);
+        const normalizedScrollPosition = relativeScrollPosition / (sectionHeight + viewportHeight);
+        const scrollProgress = Math.max(0, Math.min(1, normalizedScrollPosition));
         
-        // Calculate which panel should be active based on scroll position
-        // Each panel gets a full viewport height of scrolling space
-        const progress = Math.min(numPanels, Math.max(0, scrollPosition / windowHeight));
-        const activeIndex = Math.min(Math.floor(progress), numPanels - 1);
+        // Determine if we're in the actual sticky phase (between 20% and 80% of scroll progress)
+        const isInStickZone = scrollProgress > 0.2 && scrollProgress < 0.8;
+        const isBeforeStickZone = scrollProgress <= 0.2;
+        const isAfterStickZone = scrollProgress >= 0.8;
         
-        // Update progress bar fill
-        const progressPercent = (progress / numPanels) * 100;
+        // Handle scroll progress bar fill
         if (progressFill) {
-            // For mobile, we need to handle horizontal progress
-            const isHorizontal = window.innerWidth <= 991;
-            if (isHorizontal) {
-                progressFill.style.width = `${progressPercent}%`;
-            } else {
-                progressFill.style.height = `${progressPercent}%`;
-            }
+            // Only show progress during the middle 60% of the scroll
+            const progressFillAmount = Math.max(0, Math.min(1, (scrollProgress - 0.2) / 0.6));
+            progressFill.style.height = `${progressFillAmount * 100}%`;
         }
         
-        // Update section data attribute for CSS styling
-        benefitsSection.setAttribute('data-progress', activeIndex);
-        
-        // Determine if we should stick or release the container
-        if (progress < numPanels) {
-            // Still revealing panels - stick the container
-            benefitsContainer.style.position = 'sticky';
-            benefitsContainer.style.top = '0';
-        } else {
-            // All panels revealed - release the container
-            benefitsContainer.style.position = 'relative';
-            benefitsContainer.style.top = `${numPanels * windowHeight}px`;
+        // Show/hide progress container based on whether we're in the stick zone
+        if (progressContainer) {
+            progressContainer.style.opacity = isInStickZone ? '1' : '0';
+            progressContainer.style.visibility = isInStickZone ? 'visible' : 'hidden';
         }
         
-        // Show/hide the continue button
-        if (activeIndex === numPanels - 1 && progress > numPanels - 0.2) {
-            continueButton.classList.add('visible');
-        } else {
-            continueButton.classList.remove('visible');
+        // Show/hide parallax background based on whether we're in the stick zone
+        if (parallaxBg) {
+            parallaxBg.style.opacity = isInStickZone ? '1' : '0';
         }
         
-        // Reveal panels one by one as we scroll
-        panels.forEach((panel, index) => {
-            // Remove all active states first
-            panel.classList.remove('visible');
+        // Apply different behaviors based on scroll zone
+        if (isBeforeStickZone) {
+            // In the "scroll in" zone (first 20% of section)
             
-            // Make panels visible as we progress
-            if (index <= activeIndex) {
-                panel.classList.add('visible');
+            // Calculate how far we've scrolled into the entrance zone (0-1)
+            const entranceProgress = scrollProgress / 0.2;
+            
+            // Handle section header during entrance
+            if (benefitsHeader) {
+                benefitsHeader.style.position = 'relative';
+                benefitsHeader.style.transform = `translateY(${(1 - entranceProgress) * 50}px)`;
+                benefitsHeader.style.opacity = entranceProgress;
             }
-        });
-        
-        // Animate parallax background elements
-        if (parallaxShapes) {
-            parallaxShapes.forEach((shape, index) => {
-                const speed = 0.1 - (index * 0.02); // Different speeds for each shape
-                const parallaxOffset = scrollPosition * speed;
-                shape.style.transform = `translateY(${-parallaxOffset}px)`;
+            
+            // Remove sticky states as we're scrolling in naturally
+            panels.forEach(panel => {
+                panel.classList.remove('fixed', 'active');
+                panel.style.opacity = 0;
+            });
+            
+            // Set first panel to start appearing as we approach stick zone
+            if (entranceProgress > 0.5 && panels[0]) {
+                panels[0].classList.add('active');
+                panels[0].style.opacity = (entranceProgress - 0.5) * 2;
+                panels[0].style.transform = `translateY(${(1 - entranceProgress) * 30}px)`;
+            }
+            
+        } else if (isInStickZone) {
+            // In the "sticky" zone (middle 60% of section)
+            
+            // Calculate panel activation progress (0-1 within the middle 60%)
+            const panelProgress = (scrollProgress - 0.2) / 0.6;
+            
+            // Header is fully visible and fixed
+            if (benefitsHeader) {
+                benefitsHeader.style.position = 'fixed';
+                benefitsHeader.style.top = '0';
+                benefitsHeader.style.transform = 'translateY(0)';
+                benefitsHeader.style.opacity = '1';
+            }
+            
+            // Since we're replacing panels, first reset all of them
+            panels.forEach(panel => {
+                panel.classList.remove('active', 'fixed');
+                panel.style.opacity = 0;
+                panel.style.transform = 'translateY(30px)';
+            });
+            
+            // Determine which panel should be active based on panel progress
+            const activeIndex = Math.min(
+                Math.floor(panelProgress * TOTAL_PANELS), 
+                TOTAL_PANELS - 1
+            );
+            
+            // Calculate cross-fade between panels
+            const panelSegmentSize = 1 / TOTAL_PANELS;
+            const inSegmentProgress = (panelProgress - (activeIndex * panelSegmentSize)) / panelSegmentSize;
+            
+            // Show current panel
+            if (panels[activeIndex]) {
+                const currentPanel = panels[activeIndex];
+                currentPanel.classList.add('active', 'fixed');
+                currentPanel.style.opacity = 1;
+                currentPanel.style.transform = 'translateY(0)';
+            }
+            
+            // If we're transitioning to the next panel, start fading it in
+            if (inSegmentProgress > 0.7 && activeIndex < TOTAL_PANELS - 1) {
+                const nextPanel = panels[activeIndex + 1];
+                if (nextPanel) {
+                    const fadeInAmount = (inSegmentProgress - 0.7) / 0.3;
+                    nextPanel.classList.add('active', 'fixed');
+                    nextPanel.style.opacity = fadeInAmount;
+                    nextPanel.style.transform = `translateY(${(1 - fadeInAmount) * 30}px)`;
+                }
+            }
+            
+            // Update marker states based on current progress
+            markers.forEach((marker, index) => {
+                marker.classList.remove('active', 'viewed');
+                
+                if (index <= activeIndex) {
+                    marker.classList.add('viewed');
+                }
+                
+                if (index === activeIndex) {
+                    marker.classList.add('active');
+                }
+            });
+            
+        } else if (isAfterStickZone) {
+            // In the "scroll out" zone (last 20% of section)
+            
+            // Calculate exit progress (0-1 in the exit zone)
+            const exitProgress = (scrollProgress - 0.8) / 0.2;
+            
+            // Header starts scrolling out
+            if (benefitsHeader) {
+                benefitsHeader.style.position = 'relative';
+                benefitsHeader.style.top = `${-50 * exitProgress}px`;
+                benefitsHeader.style.opacity = Math.max(0, 1 - exitProgress * 1.5);
+            }
+            
+            // Show only the last panel and have it scroll out naturally
+            panels.forEach((panel, index) => {
+                panel.classList.remove('fixed');
+                
+                if (index === TOTAL_PANELS - 1) {
+                    // Last panel scrolls out
+                    panel.classList.add('active');
+                    panel.style.transform = `translateY(${-30 * exitProgress}px)`;
+                    panel.style.opacity = Math.max(0, 1 - exitProgress * 1.5);
+                } else {
+                    // Hide all other panels
+                    panel.classList.remove('active');
+                    panel.style.opacity = 0;
+                }
             });
         }
     }
     
-    // Click event for markers - smooth scroll to panel
-    markers.forEach(marker => {
+    // Add click events to markers for jumping to sections
+    markers.forEach((marker, index) => {
         marker.addEventListener('click', () => {
-            const markerNum = marker.getAttribute('data-marker');
-            // Convert to zero-based index
-            const targetIndex = parseInt(markerNum) - 1;
-            // Calculate target scroll position
-            const targetPosition = benefitsSection.offsetTop + (targetIndex * windowHeight);
+            // Calculate position in the scroll sequence based on panel index
+            const panelProgress = (index / TOTAL_PANELS);
+            // Convert to overall scroll progress (adding 0.2 for entrance and multiplying by 0.6 for middle section)
+            const targetProgress = 0.2 + (panelProgress * 0.6);
+            // Calculate the actual scroll position
+            const targetPosition = sectionTop - viewportHeight + (targetProgress * (sectionHeight + viewportHeight));
             
-            // Smooth scroll to panel
             window.scrollTo({
                 top: targetPosition,
                 behavior: 'smooth'
@@ -406,22 +516,20 @@ function initBenefitsScroll() {
         });
     });
     
-    // Listen for scroll events to update the section
-    window.addEventListener('scroll', updateBenefitsSection);
+    // Initialize position on load
+    updatePanels();
     
-    // Listen for resize events to recalculate dimensions
+    // Update on scroll
+    window.addEventListener('scroll', updatePanels);
+    
+    // Handle resize events
     window.addEventListener('resize', () => {
-        setTimeout(() => {
-            // Update window height
-            const newWindowHeight = window.innerHeight;
-            // Update total scroll height
-            const newTotalHeight = (numPanels + 1) * newWindowHeight;
-            benefitsSection.style.height = `${newTotalHeight}px`;
-            // Update the section
-            updateBenefitsSection();
-        }, 100);
+        // Recalculate dimensions
+        sectionHeight = benefitsSection.offsetHeight;
+        viewportHeight = window.innerHeight;
+        updateBoundaries();
+        
+        // Update panel positions
+        updatePanels();
     });
-    
-    // Initialize on page load
-    setTimeout(updateBenefitsSection, 100);
 } 
