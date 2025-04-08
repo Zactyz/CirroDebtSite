@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initFaqAccordion();
     initHowItWorks();
     initBenefitsScroll();
+    initParallaxElements();
+    initHowItWorksCarousel();
 });
 
 // Theme Toggle Functionality
@@ -685,4 +687,345 @@ function initBenefitsScroll() {
         // Update panel positions
         updatePanels();
     });
+}
+
+// Add this function for improved parallax effects with better distribution
+function initParallaxElements() {
+    // Create fixed background elements with CSS transform for better performance
+    initFixedBackgrounds();
+    
+    // Create evenly distributed floating elements
+    addFloatingElements();
+}
+
+// Initialize fixed background parallax that won't be affected by scroll jank
+function initFixedBackgrounds() {
+    const sections = document.querySelectorAll('.hero, .benefits-static, .how-it-works, .features, .testimonials, .cta, .pricing');
+    
+    sections.forEach(section => {
+        // Don't duplicate if already initialized
+        if (section.hasAttribute('data-parallax-initialized')) return;
+        
+        // Mark as initialized
+        section.setAttribute('data-parallax-initialized', 'true');
+        
+        // Add fixed position reference for parallax
+        const parallaxRef = document.createElement('div');
+        parallaxRef.className = 'parallax-reference';
+        parallaxRef.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;';
+        section.appendChild(parallaxRef);
+    });
+    
+    // Use requestAnimationFrame for smoother performance
+    let ticking = false;
+    let lastScrollY = window.scrollY;
+    
+    function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+    }
+    
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(updateParallax);
+            ticking = true;
+        }
+    }
+    
+    function updateParallax() {
+        const elements = document.querySelectorAll('.wave-shape, .float-dollar, .float-dot, .float-cloud-dollar, .cloud');
+        
+        elements.forEach(element => {
+            const section = element.closest('section');
+            if (!section) return;
+            
+            const rect = section.getBoundingClientRect();
+            const sectionVisible = rect.top < window.innerHeight && rect.bottom > 0;
+            
+            if (sectionVisible) {
+                // Calculate how far element is from the center of the viewport
+                const viewportMiddle = window.innerHeight / 2;
+                const elementMiddle = rect.top + rect.height / 2;
+                const distanceFromCenter = (elementMiddle - viewportMiddle) * 0.1;
+                
+                // Parallax effect based on element type
+                if (element.classList.contains('wave-shape')) {
+                    const index = Array.from(element.parentNode.children).indexOf(element);
+                    const speed = 0.15 * (index + 1);
+                    element.style.transform = `translateY(${distanceFromCenter * speed}px) scaleY(${1 - Math.abs(distanceFromCenter) * 0.0003})`;
+                } 
+                else if (element.classList.contains('float-dollar')) {
+                    element.style.transform = `translateY(${-distanceFromCenter * 0.2}px)`;
+                }
+                else if (element.classList.contains('float-dot')) {
+                    element.style.transform = `translateY(${-distanceFromCenter * 0.3}px)`;
+                }
+                else if (element.classList.contains('float-cloud-dollar')) {
+                    element.style.transform = `translateY(${-distanceFromCenter * 0.25}px)`;
+                }
+                else if (element.classList.contains('cloud')) {
+                    element.style.transform = `translateX(${distanceFromCenter * 0.2}px)`;
+                }
+            }
+        });
+        
+        ticking = false;
+    }
+    
+    // Add scroll listener
+    window.addEventListener('scroll', onScroll, { passive: true });
+    
+    // Initial update
+    updateParallax();
+}
+
+function addFloatingElements() {
+    // Target all sections including footer
+    const targetSections = document.querySelectorAll('.hero, .benefits-static, .how-it-works, .features, .testimonials, .cta, .pricing, footer');
+    
+    // Consistent config for all sections
+    const sectionConfig = {
+        dollars: 6,      // Reduced slightly
+        dots: 10,       // Reduced slightly
+        cloudDollars: 4, // Reduced slightly
+        clouds: 3,       // Reduced slightly
+        hasWaves: true     // Apply waves to ALL sections
+    };
+    
+    // Predefined positions for better vertical distribution
+    const dollarPositions = [
+        { left: '8%', top: '12%' }, { right: '12%', top: '25%' },
+        { left: '22%', top: '45%' }, { right: '28%', top: '55%' },
+        { left: '15%', top: '75%' }, { right: '10%', top: '88%' }
+    ];
+    
+    const dotPositions = [
+        { left: '5%', top: '8%' }, { right: '8%', top: '18%' },
+        { left: '18%', top: '35%' }, { right: '22%', top: '48%' },
+        { left: '30%', top: '60%' }, { right: '35%', top: '72%' },
+        { left: '12%', top: '85%' }, { right: '15%', top: '92%' },
+        { left: '45%', top: '20%' }, { right: '40%', top: '80%' }
+    ];
+    
+    const cloudDollarPositions = [
+        { left: '10%', top: '20%' }, { right: '15%', top: '35%' },
+        { left: '25%', top: '65%' }, { right: '30%', top: '80%' }
+    ];
+
+    const cloudPositions = [
+        { left: '-200px', top: '15%', width: '200px', height: '100px', animationName: 'cloud-move-right', className: 'cloud-1' },
+        { right: '-160px', top: '55%', width: '160px', height: '80px', animationName: 'cloud-move-left', className: 'cloud-2' },
+        { left: '-140px', top: '80%', width: '140px', height: '70px', animationName: 'cloud-move-right', className: 'cloud-3' }
+    ];
+    
+    targetSections.forEach(function(section) {
+        // Clear existing elements if re-initializing (optional, for safety)
+        const existingParallax = section.querySelector('.parallax-elements');
+        if (existingParallax) existingParallax.remove();
+        const existingClouds = section.querySelector('.cloud-container');
+        if (existingClouds) existingClouds.remove();
+        const existingWaves = section.querySelector('.wave-bg');
+        if (existingWaves) existingWaves.remove();
+
+        // --- Create containers --- 
+        const parallaxElements = document.createElement('div');
+        parallaxElements.className = 'parallax-elements';
+        const slowLayer = document.createElement('div');
+        slowLayer.className = 'parallax-layer parallax-slow';
+        const mediumLayer = document.createElement('div');
+        mediumLayer.className = 'parallax-layer parallax-medium';
+
+        // --- Add Floating Elements --- 
+        // Dollars
+        for (let i = 0; i < sectionConfig.dollars; i++) {
+            const dollar = document.createElement('div');
+            dollar.className = `float-item float-dollar float-dollar-${i+1}`;
+            dollar.innerHTML = '<i class="fas fa-dollar-sign"></i>';
+            const pos = dollarPositions[i % dollarPositions.length];
+            Object.assign(dollar.style, pos);
+            dollar.style.animationDelay = `${(i * 1.8) % 11}s`; 
+            slowLayer.appendChild(dollar);
+        }
+
+        // Cloud-Dollars
+        for (let i = 0; i < sectionConfig.cloudDollars; i++) {
+            const cloudDollar = document.createElement('div');
+            cloudDollar.className = `float-item float-cloud-dollar float-cloud-dollar-${i+1}`;
+            const pos = cloudDollarPositions[i % cloudDollarPositions.length];
+             Object.assign(cloudDollar.style, pos);
+            cloudDollar.style.animationDelay = `${(i * 2.5 + 1) % 16}s`;
+            mediumLayer.appendChild(cloudDollar);
+        }
+
+        // Dots
+        for (let i = 0; i < sectionConfig.dots; i++) {
+            const dot = document.createElement('div');
+            dot.className = `float-item float-dot float-dot-${i+1}`;
+            const pos = dotPositions[i % dotPositions.length];
+            Object.assign(dot.style, pos);
+            dot.style.animationDelay = `${(i * 1.4) % 14}s`;
+            const size = 5 + (i % 3) * 2;
+            dot.style.width = `${size}px`;
+            dot.style.height = `${size}px`;
+            mediumLayer.appendChild(dot);
+        }
+        
+        parallaxElements.appendChild(slowLayer);
+        parallaxElements.appendChild(mediumLayer);
+        section.appendChild(parallaxElements);
+
+        // --- Add Moving Clouds --- 
+        const cloudContainer = document.createElement('div');
+        cloudContainer.className = 'cloud-container';
+        for (let i = 0; i < sectionConfig.clouds; i++) {
+            const cloud = document.createElement('div');
+            const config = cloudPositions[i % cloudPositions.length];
+            cloud.className = `cloud ${config.className}`;
+            Object.keys(config).forEach(key => {
+                if (key !== 'className' && key !== 'animationName') {
+                    cloud.style[key] = config[key];
+                }
+            });
+            const speedMultiplier = 1 + (i % 2) * 0.3;
+            const baseSpeed = config.animationName === 'cloud-move-right' ? 
+                              'var(--cloud-speed-slow)' : 'var(--cloud-speed-medium)';
+            cloud.style.animationDuration = `calc(${baseSpeed} * ${speedMultiplier})`;
+            cloudContainer.appendChild(cloud);
+        }
+        section.appendChild(cloudContainer);
+
+        // --- Add Wave Background (if applicable) --- 
+        if (sectionConfig.hasWaves) {
+            const waveBg = document.createElement('div');
+            waveBg.className = 'wave-bg';
+            waveBg.innerHTML = `
+                <div class="wave-gradient"></div>
+                <div class="wave-shape wave-shape-1"></div>
+                <div class="wave-shape wave-shape-2"></div>
+                <div class="wave-shape wave-shape-3"></div>
+                <div class="bg-pattern bg-dots"></div>
+            `;
+            section.insertBefore(waveBg, section.firstChild);
+        }
+        
+        // Convert cards
+        convertToCloudCards(section);
+    });
+}
+
+// Apply cloud-card styling to existing cards
+function convertToCloudCards(section) {
+    // Find any card elements in the section
+    const cards = section.querySelectorAll('.feature-card, .benefit-card, .pricing-card, .testimonial, .faq-accordion-item');
+    
+    cards.forEach(card => {
+        if (!card.classList.contains('cloud-card')) {
+            card.classList.add('cloud-card');
+        }
+    });
+}
+
+// Initialize carousel for How It Works section
+function initHowItWorksCarousel() {
+    const carousel = document.querySelector('.carousel-container');
+    if (!carousel) return;
+    
+    const cards = carousel.querySelectorAll('.carousel-card');
+    const prevBtn = carousel.querySelector('.carousel-nav.prev');
+    const nextBtn = carousel.querySelector('.carousel-nav.next');
+    const indicators = carousel.querySelectorAll('.indicator');
+    
+    let currentIndex = 0;
+    
+    // Function to update carousel
+    function updateCarousel(newIndex) {
+        // Validate index
+        if (newIndex < 0) newIndex = cards.length - 1;
+        if (newIndex >= cards.length) newIndex = 0;
+        
+        const prevIndex = currentIndex;
+        currentIndex = newIndex;
+        
+        // Update card classes
+        cards.forEach((card, index) => {
+            card.classList.remove('active', 'prev');
+            
+            if (index === currentIndex) {
+                card.classList.add('active');
+            } else if (index === prevIndex) {
+                card.classList.add('prev');
+            }
+        });
+        
+        // Update indicators
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentIndex);
+        });
+    }
+    
+    // Event listeners for navigation
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            updateCarousel(currentIndex - 1);
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            updateCarousel(currentIndex + 1);
+        });
+    }
+    
+    // Event listeners for indicators
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            updateCarousel(index);
+        });
+    });
+    
+    // Auto-advance carousel every 5 seconds
+    let autoplayInterval;
+    
+    function startAutoplay() {
+        autoplayInterval = setInterval(() => {
+            updateCarousel(currentIndex + 1);
+        }, 5000);
+    }
+    
+    function stopAutoplay() {
+        clearInterval(autoplayInterval);
+    }
+    
+    // Start autoplay by default
+    startAutoplay();
+    
+    // Pause autoplay on hover
+    carousel.addEventListener('mouseenter', stopAutoplay);
+    carousel.addEventListener('mouseleave', startAutoplay);
+    
+    // Touch swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    carousel.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    carousel.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+    
+    function handleSwipe() {
+        if (touchEndX < touchStartX - 50) {
+            // Swipe left - show next
+            updateCarousel(currentIndex + 1);
+        } else if (touchEndX > touchStartX + 50) {
+            // Swipe right - show previous
+            updateCarousel(currentIndex - 1);
+        }
+    }
+    
+    // Initialize carousel with first card active
+    updateCarousel(0);
 } 

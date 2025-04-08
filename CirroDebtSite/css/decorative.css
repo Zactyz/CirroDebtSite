@@ -1,6 +1,6 @@
 /* Decorative Elements CSS for Cirro Debt
  * This file contains decorative elements and styling 
- * inspired by YNAB.com's modern design approach
+ * inspired by YNAB.com's modern design approach with a "Clouds and Money" theme
  */
 
 /* ===== Base Variables ===== */
@@ -20,6 +20,26 @@
   /* Pattern colors */
   --pattern-light: rgba(255, 255, 255, 0.03);
   --pattern-dark: rgba(0, 0, 0, 0.02);
+  
+  /* Cloud theme colors */
+  --cloud-white: rgba(255, 255, 255, 0.8);
+  --cloud-light: rgba(240, 248, 255, 0.5);
+  --cloud-blue: rgba(135, 206, 250, 0.2);
+  --cloud-shadow: rgba(0, 0, 0, 0.05);
+  
+  /* Wave colors for YNAB-style backgrounds - Light mode uses orange dominant scheme */
+  --wave-primary: rgba(255, 155, 14, 0.15);
+  --wave-secondary: rgba(255, 125, 0, 0.1);
+  --wave-accent: rgba(255, 180, 50, 0.12);
+  
+  /* Hero gradients - Light mode uses orange/blue sky gradient */
+  --hero-gradient: linear-gradient(135deg, rgba(255, 155, 14, 0.5) 0%, rgba(255, 125, 0, 0.3) 60%, rgba(135, 206, 250, 0.2) 100%);
+  --hero-gradient-overlay: linear-gradient(180deg, rgba(255, 155, 14, 0.15) 0%, rgba(135, 206, 250, 0.1) 100%);
+  
+  /* Cloud animation speeds */
+  --cloud-speed-slow: 90s;
+  --cloud-speed-medium: 75s;
+  --cloud-speed-fast: 60s;
 }
 
 [data-theme="dark"] {
@@ -29,6 +49,21 @@
   --pattern-light: rgba(255, 255, 255, 0.03);
   --pattern-dark: rgba(255, 255, 255, 0.02);
   --primary-glow: 0 0 30px rgba(255, 155, 14, 0.3);
+  
+  /* Cloud theme colors for dark mode */
+  --cloud-white: rgba(255, 255, 255, 0.1);
+  --cloud-light: rgba(240, 248, 255, 0.08);
+  --cloud-blue: rgba(135, 206, 250, 0.1);
+  --cloud-shadow: rgba(0, 0, 0, 0.1);
+  
+  /* Wave colors for dark mode - Blue accents work well with dark theme */
+  --wave-primary: rgba(255, 155, 14, 0.15);
+  --wave-secondary: rgba(62, 149, 255, 0.15);
+  --wave-accent: rgba(255, 155, 14, 0.1);
+  
+  /* Hero gradients - Dark mode uses deeper blue/orange sky gradient */
+  --hero-gradient: linear-gradient(135deg, rgba(255, 155, 14, 0.2) 0%, rgba(74, 110, 255, 0.15) 60%, rgba(83, 212, 255, 0.1) 100%);
+  --hero-gradient-overlay: linear-gradient(180deg, rgba(255, 155, 14, 0.15) 0%, rgba(83, 212, 255, 0.05) 100%);
 }
 
 /* ===== Section Enhancements ===== */
@@ -37,6 +72,589 @@
   overflow: hidden;
   z-index: 1;
   padding: 10rem 0;
+}
+
+/* ===== YNAB-Style Wavy Background with Improved Consistency ===== */
+.wave-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.wave-gradient {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: var(--hero-gradient);
+  opacity: 0.25;
+  z-index: -2;
+  will-change: transform;
+}
+
+.wave-shape {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  will-change: transform;
+}
+
+/* Apply textures to all sections consistently */
+section::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-image: radial-gradient(var(--pattern-dark) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.4;
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* ===== Cloud and Wave Dividers with improved transitions ===== */
+.cloud-divider {
+  display: none;
+}
+
+/* Section positioning adjustments */
+section {
+  position: relative;
+  z-index: 1;
+  padding-top: 6rem;
+  padding-bottom: 8rem;
+  margin-bottom: 0;
+  border: none;
+  border-bottom: none;
+  box-shadow: none;
+  overflow: visible;
+}
+
+/* Ensure there's enough space for cloud dividers */
+section + section {
+  padding-top: 8rem; /* Add extra top padding to sections that follow another section */
+}
+
+/* Set background colors for alternating sections */
+section.hero {
+  background-color: var(--bg-color);
+  padding-top: 100px;
+  margin-top: 0;
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+section.benefits-static {
+  background-color: var(--bg-color-alt);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+section.dashboard-example {
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+section.features {
+  background-color: var(--bg-color-alt);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+section.how-it-works {
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+section.early-access {
+  background-color: var(--bg-color-alt);
+  border-bottom: none;
+}
+
+footer {
+  background-color: var(--bg-color);
+  padding-top: 5rem;
+  padding-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* First section specific adjustments */
+section.hero {
+  padding-bottom: 8rem;
+}
+
+/* Last section (footer) adjustments */
+footer {
+  margin-top: 0;
+}
+
+/* Consistent textures */
+section::before, footer::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-image: radial-gradient(var(--pattern-dark) 1px, transparent 1px);
+  background-size: 25px 25px; /* Slightly larger pattern */
+  opacity: 0.3; /* More subtle */
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* Ensure waves are present and consistent */
+.wave-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+/* Styling for the new cloud SVGs */
+.cloud-divider .cloud-fill {
+  fill: inherit; /* Inherit from path */
+}
+
+/* Remove old transition element if present */
+.section-transition-clouds {
+  display: none;
+}
+
+/* Enhanced Parallax Effect */
+.parallax-reference {
+  will-change: transform;
+}
+
+/* Floating Elements with improved performance */
+.float-item {
+  position: absolute;
+  will-change: transform;
+  backface-visibility: hidden;
+  z-index: 0;
+  transform: translateZ(0);
+}
+
+.float-dollar {
+  color: var(--primary-color);
+  font-size: 3rem;
+  text-shadow: 0 0 5px rgba(255, 155, 14, 0.4);
+  animation: float-dollar 20s linear infinite;
+  opacity: 0.5;
+  will-change: transform, opacity;
+}
+
+.float-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  animation: float-dot 25s linear infinite;
+  opacity: 0.4;
+  will-change: transform, opacity;
+}
+
+/* Cloud Elements with improved visibility */
+.cloud-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cloud {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.7;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.05));
+}
+
+/* Improved cloud-dollar combo element */
+.float-cloud-dollar {
+  position: relative;
+  width: 50px;
+  height: 30px;
+  animation: float-cloud 30s linear infinite;
+  opacity: 0.6;
+  will-change: transform;
+  filter: drop-shadow(0 3px 8px rgba(255, 155, 14, 0.2));
+}
+
+/* Cloud animation durations */
+:root {
+  --cloud-speed-slow: 90s;    /* Slower for better effect */
+  --cloud-speed-medium: 75s;  /* Slower for better effect */
+  --cloud-speed-fast: 60s;    /* Slower for better effect */
+}
+
+/* Improved and smoother animations */
+@keyframes float-dollar {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(0, -30px, 0) rotate(5deg);
+  }
+  50% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  75% {
+    transform: translate3d(0, 30px, 0) rotate(-5deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+}
+
+@keyframes float-dot {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -40px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes float-cloud {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  25% {
+    transform: translate3d(20px, -20px, 0);
+  }
+  50% {
+    transform: translate3d(40px, 0, 0);
+  }
+  75% {
+    transform: translate3d(20px, 20px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Ensure consistent animations between sections */
+.hero .wave-shape-1, .benefits-static .wave-shape-1, .features .wave-shape-1, 
+.how-it-works .wave-shape-1, .testimonials .wave-shape-2, .cta .wave-shape-1, 
+.pricing .wave-shape-1, footer .wave-shape-1 {
+  animation: wave-float 20s ease-in-out infinite alternate;
+}
+
+.hero .wave-shape-2, .benefits-static .wave-shape-2, .features .wave-shape-2, 
+.how-it-works .wave-shape-2, .testimonials .wave-shape-2, .cta .wave-shape-2, 
+.pricing .wave-shape-2, footer .wave-shape-2 {
+  animation: wave-float 15s ease-in-out infinite alternate;
+}
+
+.hero .wave-shape-3, .benefits-static .wave-shape-3, .features .wave-shape-3, 
+.how-it-works .wave-shape-3, .testimonials .wave-shape-3, .cta .wave-shape-3, 
+.pricing .wave-shape-3, footer .wave-shape-3 {
+  animation: wave-float 25s ease-in-out infinite alternate;
+}
+
+/* Improved cloud moving animations */
+@keyframes cloud-move-right {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(100vw + 240px)); }
+}
+
+@keyframes cloud-move-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-100vw - 180px)); }
+}
+
+/* ===== Cloud Elements ===== */
+.cloud-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.cloud {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.7;
+  will-change: transform;
+}
+
+.cloud-1 {
+  width: 240px;
+  height: 120px;
+  top: 15%;
+  left: -240px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 120'%3E%3Cpath fill='%23FFFFFF' d='M215.4,100.7c-0.9,0-1.8,0.1-2.7,0.2c-4.2-14.5-17.6-25.1-33.5-25.1c-5.5,0-10.7,1.3-15.3,3.5c-7.2-30.8-34.8-51.2-65.6-44.4C74.5,41,58.1,65,59.3,90.7c-11.9,1.6-22.1,11.3-23.9,24.3c-0.2,1.3-0.3,2.7-0.3,4.1c0,0.5,0,1.1,0.1,1.6h180.4c0-0.6-0.1-1.1-0.1-1.7C215.4,112.6,215.4,106.5,215.4,100.7z'/%3E%3C/svg%3E");
+  animation: cloud-move-right var(--cloud-speed-slow) linear infinite;
+}
+
+.cloud-2 {
+  width: 180px;
+  height: 90px;
+  top: 35%;
+  right: -180px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 90'%3E%3Cpath fill='%23FFFFFF' d='M162.9,75.5c-0.7,0-1.4,0.1-2,0.2c-3.2-10.9-13.2-18.8-25.1-18.8c-4.1,0-8,0.9-11.5,2.6c-5.4-23.1-26.1-38.4-49.2-33.3c-17.8,4-29.7,21.8-28.8,40.5c-8.9,1.2-16.6,8.5-17.9,18.2c-0.1,1-0.2,2-0.2,3.1c0,0.4,0,0.8,0,1.2h135.3c0-0.4,0-0.8,0-1.3C162.9,84.4,162.9,79.9,162.9,75.5z'/%3E%3C/svg%3E");
+  animation: cloud-move-left var(--cloud-speed-medium) linear infinite;
+}
+
+.cloud-3 {
+  width: 160px;
+  height: 80px;
+  top: 60%;
+  left: -160px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 80'%3E%3Cpath fill='%23FFFFFF' d='M144.8,67.1c-0.6,0-1.2,0.1-1.8,0.1c-2.8-9.7-11.7-16.7-22.3-16.7c-3.7,0-7.1,0.8-10.2,2.3c-4.8-20.5-23.2-34.1-43.7-29.6c-15.9,3.5-26.4,19.4-25.6,36c-7.9,1.1-14.7,7.5-15.9,16.2c-0.1,0.9-0.2,1.8-0.2,2.7c0,0.4,0,0.7,0,1.1h120.3c0-0.4,0-0.7,0-1.1C144.8,75,144.8,71.1,144.8,67.1z'/%3E%3C/svg%3E");
+  animation: cloud-move-right var(--cloud-speed-fast) linear infinite;
+}
+
+.cloud-4 {
+  width: 120px;
+  height: 60px;
+  bottom: 20%;
+  right: -120px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 60'%3E%3Cpath fill='%23FFFFFF' d='M108.6,50.3c-0.5,0-0.9,0-1.4,0.1c-2.1-7.3-8.8-12.5-16.8-12.5c-2.8,0-5.3,0.6-7.7,1.7c-3.6-15.4-17.4-25.6-32.8-22.2c-11.9,2.7-19.8,14.5-19.2,27c-5.9,0.8-11.1,5.7-12,12.1c-0.1,0.7-0.1,1.3-0.1,2c0,0.3,0,0.5,0,0.8h90.2c0-0.3,0-0.5,0-0.8C108.6,56.2,108.6,53.3,108.6,50.3z'/%3E%3C/svg%3E");
+  animation: cloud-move-left var(--cloud-speed-slow) linear infinite;
+}
+
+@keyframes cloud-move-right {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(100vw + 240px)); }
+}
+
+@keyframes cloud-move-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-100vw - 180px)); }
+}
+
+/* ===== Parallax Floating Elements ===== */
+.parallax-elements {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.parallax-layer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform: translateY(0);
+  will-change: transform;
+}
+
+.parallax-slow {
+  transition: transform 0.1s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.parallax-medium {
+  transition: transform 0.05s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.parallax-fast {
+  transition: transform 0.02s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Floating Money and Dots */
+.float-item {
+  position: absolute;
+  animation-fill-mode: both;
+  will-change: transform;
+  z-index: 0;
+}
+
+.float-dollar {
+  color: var(--primary-color);
+  font-size: 3rem;
+  text-shadow: 0 0 5px rgba(255, 155, 14, 0.4);
+  animation: float-dollar 20s linear infinite;
+  opacity: 0.5;
+}
+
+.float-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  animation: float-dot 25s linear infinite;
+  opacity: 0.4;
+}
+
+/* Add a new cloud money combo element */
+.float-cloud-dollar {
+  position: relative;
+  width: 50px;
+  height: 30px;
+  animation: float-cloud 30s linear infinite;
+  opacity: 0.6;
+}
+
+.float-cloud-dollar::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 30'%3E%3Cpath fill='%23FFFFFF' d='M45.3,25.2c-0.2,0-0.5,0-0.7,0.1c-1.1-3.6-4.4-6.3-8.4-6.3c-1.4,0-2.7,0.3-3.8,0.9c-1.8-7.7-8.7-12.8-16.4-11.1c-6,1.3-9.9,7.3-9.6,13.5c-3,0.4-5.5,2.8-6,6.1c0,0.3-0.1,0.7-0.1,1c0,0.1,0,0.3,0,0.4h45.1c0-0.1,0-0.3,0-0.4C45.3,28.1,45.3,26.7,45.3,25.2z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.float-cloud-dollar::after {
+  content: '$';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--primary-color);
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.float-dollar-1 { top: 15%; left: 10%; animation-delay: 0s; }
+.float-dollar-2 { top: 35%; right: 15%; animation-delay: 2s; }
+.float-dollar-3 { top: 65%; left: 25%; animation-delay: 4s; }
+.float-dollar-4 { top: 80%; right: 30%; animation-delay: 6s; }
+.float-dollar-5 { top: 45%; left: 40%; animation-delay: 8s; }
+.float-dollar-6 { top: 25%; right: 20%; animation-delay: 10s; }
+
+.float-cloud-dollar-1 { top: 20%; left: 5%; animation-delay: 1s; }
+.float-cloud-dollar-2 { top: 50%; right: 8%; animation-delay: 5s; }
+.float-cloud-dollar-3 { top: 70%; left: 15%; animation-delay: 9s; }
+.float-cloud-dollar-4 { top: 30%; right: 25%; animation-delay: 13s; }
+
+.float-dot-1 { top: 20%; left: 20%; animation-delay: 1s; }
+.float-dot-2 { top: 40%; right: 25%; animation-delay: 3s; }
+.float-dot-3 { top: 70%; left: 35%; animation-delay: 5s; }
+.float-dot-4 { top: 60%; right: 40%; animation-delay: 7s; }
+.float-dot-5 { top: 30%; left: 50%; animation-delay: 9s; }
+.float-dot-6 { top: 85%; right: 15%; animation-delay: 11s; }
+.float-dot-7 { top: 75%; left: 15%; animation-delay: 13s; }
+.float-dot-8 { top: 25%; right: 45%; animation-delay: 15s; }
+
+@keyframes float-dollar {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-30px) rotate(5deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(30px) rotate(-5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes float-dot {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-40px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes float-cloud {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-20px) translateX(20px);
+  }
+  50% {
+    transform: translateY(0) translateX(40px);
+  }
+  75% {
+    transform: translateY(20px) translateX(20px);
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+}
+
+/* Cloud-themed card styling */
+.cloud-card {
+  background-color: var(--bg-color);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cloud-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, var(--cloud-white) 0%, transparent 70%);
+  opacity: 0.05;
+  z-index: -1;
+}
+
+.cloud-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .cloud-card {
+  background-color: rgba(30, 30, 40, 0.7);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .cloud-card::before {
+  opacity: 0.03;
+}
+
+[data-theme="dark"] .float-dollar {
+  opacity: 0.3;
+  text-shadow: 0 0 8px rgba(255, 155, 14, 0.6);
+}
+
+[data-theme="dark"] .float-dot {
+  opacity: 0.3;
+  background-color: var(--primary-color-light);
+}
+
+[data-theme="dark"] .float-cloud-dollar {
+  opacity: 0.4;
 }
 
 /* Hero title enhancements */
@@ -351,21 +969,21 @@
 /* ===== Media Queries ===== */
 @media (max-width: 768px) {
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 3.2rem;
   }
   
   .wave-divider svg {
-    height: 50px;
+    height: 60px; /* Smaller on mobile */
   }
   
   .steps::before {
-    left: 1.5rem;
+    left: 19px;
   }
   
   .step-number {
-    width: 3.5rem;
-    height: 3.5rem;
-    font-size: 1.25rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1.4rem;
   }
 }
 
@@ -968,4 +1586,365 @@ section:last-child {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
   box-shadow: 0 0 0 5px rgba(255, 155, 14, 0.2);
-} 
+}
+
+[data-theme="dark"] .float-dollar {
+  opacity: 0.3;
+  text-shadow: 0 0 8px rgba(255, 155, 14, 0.6);
+}
+
+[data-theme="dark"] .float-dot {
+  opacity: 0.3;
+  background-color: var(--primary-color-light);
+}
+
+[data-theme="dark"] .float-cloud-dollar {
+  opacity: 0.4;
+}
+
+/* ===== Cloud and Wave Dividers ===== */
+.cloud-divider {
+  display: none;
+}
+
+/* Section color transitions and padding/margin adjustments */
+section {
+  position: relative;
+  z-index: 1;
+  padding-top: 6rem;
+  padding-bottom: 8rem;
+  margin-bottom: 0;
+}
+
+/* First section specific adjustments */
+section.hero {
+  padding-top: 100px;
+  margin-top: 0;
+  padding-bottom: 8rem;
+}
+
+/* Last section (footer) adjustments */
+footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 0;
+  padding-top: 8rem;
+  padding-bottom: 4rem;
+}
+
+/* Footer wavy bg */
+footer::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-image: radial-gradient(var(--pattern-dark) 1px, transparent 1px);
+  background-size: 25px 25px; /* Slightly larger pattern */
+  opacity: 0.3; /* More subtle */
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* Remove old transition element if present */
+.section-transition-clouds {
+  display: none;
+}
+
+/* Carousel for How It Works section */
+.carousel-container {
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  padding: 2rem 0 6rem;
+}
+
+.carousel-track {
+  position: relative;
+  height: 450px;
+  overflow: hidden;
+}
+
+.carousel-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  transform: translateX(100%);
+  pointer-events: none;
+}
+
+.carousel-card.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.carousel-card.prev {
+  transform: translateX(-100%);
+}
+
+.card-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 3rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.card-header .step-number {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  color: white;
+  font-weight: 700;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1.5rem;
+  box-shadow: var(--primary-glow);
+}
+
+.card-header h3 {
+  font-size: 2.2rem;
+  margin: 0;
+}
+
+.card-content {
+  display: flex;
+  flex: 1;
+  gap: 2rem;
+}
+
+.step-icon {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  background: var(--primary-gradient);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: white;
+  box-shadow: var(--primary-glow);
+  position: relative;
+}
+
+.step-icon::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border-radius: 50%;
+  border: 2px dashed var(--primary-color-light);
+  animation: rotate 20s linear infinite;
+}
+
+.step-info {
+  flex: 1;
+}
+
+.feature-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.feature-tag {
+  background-color: var(--primary-color-subtle);
+  color: var(--primary-color);
+  border-radius: 30px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.result-metrics {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.result-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--primary-color-subtle);
+  border-radius: 12px;
+  padding: 1rem;
+  min-width: 100px;
+}
+
+.result-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  line-height: 1;
+}
+
+.result-label {
+  font-size: 0.9rem;
+  color: var(--text-color-secondary);
+  margin-top: 0.5rem;
+}
+
+.carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 1.5rem;
+}
+
+.carousel-nav {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.carousel-nav:hover {
+  background-color: var(--primary-color-subtle);
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.carousel-indicators {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator.active {
+  background-color: var(--primary-color);
+  transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+  .card-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .step-info {
+    margin-top: 1.5rem;
+  }
+  
+  .feature-tags {
+    justify-content: center;
+  }
+  
+  .carousel-track {
+    height: 550px;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Light mode wave colors */
+.wave-shape-1 {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ff9b0e' fill-opacity='0.15' d='M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,229.3C672,224,768,192,864,170.7C960,149,1056,139,1152,160C1248,181,1344,235,1392,261.3L1440,288L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: bottom;
+  opacity: 0.85;
+  transform: translateY(5%);
+  animation: wave-float 20s ease-in-out infinite alternate;
+}
+
+.wave-shape-2 {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ff7d00' fill-opacity='0.1' d='M0,224L48,229.3C96,235,192,245,288,229.3C384,213,480,171,576,160C672,149,768,171,864,192C960,213,1056,235,1152,240C1248,245,1344,235,1392,229.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: bottom;
+  opacity: 0.9;
+  transform: translateY(0);
+  animation: wave-float 15s ease-in-out infinite alternate;
+}
+
+.wave-shape-3 {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffb432' fill-opacity='0.12' d='M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,234.7C960,235,1056,181,1152,170.7C1248,160,1344,192,1392,208L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+  background-size: cover;
+  background-position: bottom;
+  opacity: 0.8;
+  transform: translateY(-5%);
+  animation: wave-float 25s ease-in-out infinite alternate;
+}
+
+/* Dark mode wave colors */
+[data-theme="dark"] .wave-shape-1 {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ff9b0e' fill-opacity='0.15' d='M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,229.3C672,224,768,192,864,170.7C960,149,1056,139,1152,160C1248,181,1344,235,1392,261.3L1440,288L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] .wave-shape-2 {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%234b6fff' fill-opacity='0.15' d='M0,224L48,229.3C96,235,192,245,288,229.3C384,213,480,171,576,160C672,149,768,171,864,192C960,213,1056,235,1152,240C1248,245,1344,235,1392,229.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] .wave-shape-3 {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ff9b0e' fill-opacity='0.1' d='M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,234.7C960,235,1056,181,1152,170.7C1248,160,1344,192,1392,208L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+}
+
+@keyframes wave-float {
+  0% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(-5%) scaleY(1.05);
+  }
+  100% {
+    transform: translateY(5%) scaleY(0.95);
+  }
+}
+
+.cloud-divider path {
+  transition: fill 0.3s ease;
+  fill: var(--section-transition-color, var(--bg-color));
+  stroke: none; /* No stroke to avoid black lines */
+}
+
+/* Pass next section's background color to the divider */
+section.hero .cloud-divider path { --section-transition-color: var(--bg-color-alt); }
+section.benefits-static .cloud-divider path { --section-transition-color: var(--bg-color); }
+section.dashboard-example .cloud-divider path { --section-transition-color: var(--bg-color-alt); }
+section.features .cloud-divider path { --section-transition-color: var(--bg-color); }
+section.how-it-works .cloud-divider path { --section-transition-color: var(--bg-color-alt); }
+section.early-access .cloud-divider path { --section-transition-color: var(--bg-color); } 
