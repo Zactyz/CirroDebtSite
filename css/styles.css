@@ -197,15 +197,17 @@ a:hover {
 
 .btn-primary {
   background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--primary-color) 100%);
-  color: white;
+  color: white !important;
   border: none;
   box-shadow: 0 4px 12px rgba(255, 155, 14, 0.3);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+  background: linear-gradient(135deg, var(--primary-color-light) 0%, var(--primary-color) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 155, 14, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 155, 14, 0.5);
+  filter: brightness(110%);
+  color: white !important;
 }
 
 .btn-secondary {
@@ -2042,9 +2044,13 @@ header.scrolled {
 .benefit-quote blockquote {
   font-style: italic;
   margin: 0 0 1rem 0;
-  color: var(--text-color-secondary);
+  color: var(--text-color);
   font-size: 1.5rem;
   line-height: 1.6;
+}
+
+[data-theme="dark"] .benefit-quote {
+  background-color: #1f2937;
 }
 
 .benefit-quote cite {
@@ -2216,6 +2222,14 @@ header.scrolled {
   color: var(--text-color);
   font-size: 1.6rem;
   line-height: 1.6;
+}
+
+[data-theme="dark"] .testimonial-bubble {
+  background-color: #1f2937;
+}
+
+[data-theme="dark"] .testimonial-bubble:before {
+  border-color: transparent #1f2937 transparent transparent;
 }
 
 .testimonial-author {

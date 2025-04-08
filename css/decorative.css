@@ -1100,4 +1100,9 @@ section:last-child {
 .section-enhanced {
     position: relative;
     overflow: hidden;
+}
+
+/* Remove flares in dark mode for benefits section */
+[data-theme="dark"] .benefits-bg .shape {
+  display: none;
 } 
