@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initFaqAccordion();
     initHowItWorks();
     initBenefitsScroll();
+    initNewLayouts();
 });
 
 // Theme Toggle Functionality
@@ -87,7 +88,8 @@ function initNavigation() {
                 navLinks.forEach(link => {
                     link.classList.remove('active');
                     if (link.getAttribute('href') === `#${sectionId}` || 
-                        (sectionId === 'features' && link.getAttribute('href') === '#')) {
+                        (sectionId === 'benefits' && link.getAttribute('href') === '#') ||
+                        (sectionId === 'core-features' && link.getAttribute('href') === '#core-features')) {
                         link.classList.add('active');
                     }
                 });
@@ -123,7 +125,7 @@ function initNavigation() {
 
 // Scroll Reveal Animation
 function initScrollReveal() {
-    const elements = document.querySelectorAll('.feature-card, .step, .dashboard-image, .pricing-card, .faq-accordion-item, .contact-card, .benefit-card');
+    const elements = document.querySelectorAll('.feature-card, .step, .dashboard-image, .pricing-card, .faq-accordion-item, .contact-card, .benefit-card, .feature-hub, .feature-orbital, .benefit-featured, .benefit-supporting .benefit-item');
     
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -167,6 +169,15 @@ function initScrollReveal() {
         .pricing-card:nth-child(1) { transition-delay: 0.1s; }
         .pricing-card:nth-child(2) { transition-delay: 0.2s; }
         .pricing-card:nth-child(3) { transition-delay: 0.3s; }
+        .feature-orbital:nth-child(1) { transition-delay: 0.1s; }
+        .feature-orbital:nth-child(2) { transition-delay: 0.2s; }
+        .feature-orbital:nth-child(3) { transition-delay: 0.3s; }
+        .feature-orbital:nth-child(4) { transition-delay: 0.4s; }
+        .feature-orbital:nth-child(5) { transition-delay: 0.5s; }
+        .benefit-supporting .benefit-item:nth-child(1) { transition-delay: 0.2s; }
+        .benefit-supporting .benefit-item:nth-child(2) { transition-delay: 0.3s; }
+        .benefit-supporting .benefit-item:nth-child(3) { transition-delay: 0.4s; }
+        .benefit-supporting .benefit-item:nth-child(4) { transition-delay: 0.5s; }
     `;
     document.head.appendChild(style);
 }
@@ -364,6 +375,184 @@ function initHowItWorks() {
         }
     `;
     document.head.appendChild(style);
+}
+
+/**
+ * Initialize How It Works section with carousel
+ */
+function initHowItWorks() {
+    const howItWorksSection = document.querySelector('.how-it-works');
+    if (!howItWorksSection) return;
+    
+    const carouselTrack = document.querySelector('.carousel-track');
+    const slides = document.querySelectorAll('.carousel-slide');
+    const nextBtn = document.querySelector('.next-arrow');
+    const prevBtn = document.querySelector('.prev-arrow');
+    const dots = document.querySelectorAll('.carousel-dot');
+    
+    if (!carouselTrack || !slides.length) return;
+    
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+    
+    // Initialize carousel
+    function initCarousel() {
+        // Show first slide
+        updateCarousel();
+        
+        // Add click events for navigation
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                goToSlide(currentSlide + 1);
+            });
+        }
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                goToSlide(currentSlide - 1);
+            });
+        }
+        
+        // Add click events for dots
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                goToSlide(index);
+            });
+        });
+        
+        // Add swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        carouselTrack.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        
+        carouselTrack.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50; // Min distance for swipe
+            if (touchEndX < touchStartX - swipeThreshold) {
+                // Swipe left, go to next slide
+                goToSlide(currentSlide + 1);
+            } else if (touchEndX > touchStartX + swipeThreshold) {
+                // Swipe right, go to previous slide
+                goToSlide(currentSlide - 1);
+            }
+        }
+        
+        // Auto play (optional)
+        let autoplayInterval;
+        
+        function startAutoplay() {
+            autoplayInterval = setInterval(() => {
+                goToSlide(currentSlide + 1);
+            }, 7000); // Change slide every 7 seconds
+        }
+        
+        function stopAutoplay() {
+            if (autoplayInterval) {
+                clearInterval(autoplayInterval);
+            }
+        }
+        
+        // Start autoplay
+        startAutoplay();
+        
+        // Pause autoplay on hover/interaction
+        carouselTrack.addEventListener('mouseenter', stopAutoplay);
+        carouselTrack.addEventListener('touchstart', stopAutoplay);
+        nextBtn.addEventListener('mouseenter', stopAutoplay);
+        prevBtn.addEventListener('mouseenter', stopAutoplay);
+        
+        // Resume autoplay when cursor leaves
+        carouselTrack.addEventListener('mouseleave', startAutoplay);
+        
+        // Set up intersection observer to pause when not in viewport
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    startAutoplay();
+                } else {
+                    stopAutoplay();
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        observer.observe(howItWorksSection);
+    }
+    
+    // Go to specified slide number
+    function goToSlide(slideIndex) {
+        // Handle wrapping
+        if (slideIndex >= totalSlides) {
+            slideIndex = 0;
+        } else if (slideIndex < 0) {
+            slideIndex = totalSlides - 1;
+        }
+        
+        currentSlide = slideIndex;
+        updateCarousel();
+    }
+    
+    // Update carousel position and active states
+    function updateCarousel() {
+        // Update track position
+        carouselTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+        
+        // Update dots
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+        
+        // Add active class to current slide
+        slides.forEach((slide, index) => {
+            slide.classList.toggle('active', index === currentSlide);
+            
+            // Add revealed class for animation
+            if (index === currentSlide) {
+                slide.classList.add('revealed');
+            } else {
+                // Optional: remove revealed class when not active
+                // slide.classList.remove('revealed');
+            }
+        });
+    }
+    
+    // Add CSS for animations
+    const style = document.createElement('style');
+    style.textContent = `
+        .carousel-slide {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .carousel-slide.active {
+            opacity: 1;
+        }
+        
+        .carousel-slide.revealed .step-card {
+            animation: slide-up 0.5s forwards;
+        }
+        
+        @keyframes slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Initialize the carousel
+    initCarousel();
 }
 
 /**
@@ -685,4 +874,73 @@ function initBenefitsScroll() {
         // Update panel positions
         updatePanels();
     });
+}
+
+// Initialize new layouts
+function initNewLayouts() {
+    // Initialize cascade features with animation
+    const cascadeFeatures = document.querySelectorAll('.cascade-feature');
+    if (cascadeFeatures.length) {
+        // Add scroll reveal for cascade features with staggered animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Get the index of the feature
+                    const featureIndex = Array.from(cascadeFeatures).indexOf(entry.target);
+                    
+                    // Add staggered delay based on index
+                    entry.target.style.transitionDelay = (0.2 * featureIndex) + 's';
+                    
+                    // Add revealed class after a small delay to ensure CSS transition works
+                    setTimeout(() => {
+                        entry.target.classList.add('revealed');
+                    }, 50);
+                    
+                    // Unobserve after revealing
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        });
+        
+        cascadeFeatures.forEach(feature => {
+            observer.observe(feature);
+        });
+    }
+    
+    // Make sure benefits section is properly initialized
+    const benefitFeatured = document.querySelector('.benefit-featured');
+    const benefitItems = document.querySelectorAll('.benefit-supporting-card');
+    
+    if (benefitFeatured) {
+        benefitFeatured.style.opacity = '1';
+        benefitFeatured.style.transform = 'translateY(0)';
+    }
+    
+    if (benefitItems.length) {
+        benefitItems.forEach((item, index) => {
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+            item.style.transitionDelay = (0.1 * (index + 1)) + 's';
+        });
+    }
+    
+    // Check for responsive layout issues and fix them
+    fixResponsiveLayouts();
+    window.addEventListener('resize', fixResponsiveLayouts);
+}
+
+// Fix any responsive layout issues
+function fixResponsiveLayouts() {
+    const isMobile = window.innerWidth < 992;
+    
+    // Handle cascade features on mobile
+    if (isMobile) {
+        const cascadeFlowLine = document.querySelector('.cascade-flow-line');
+        if (cascadeFlowLine) {
+            cascadeFlowLine.style.width = '2px';
+        }
+    }
 } 

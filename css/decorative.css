@@ -215,6 +215,11 @@
   transform: rotate(180deg);
 }
 
+/* For waves that need to be flipped right-side up */
+.wave-divider.wave-bottom-flipped {
+  transform: rotate(0deg);
+}
+
 .wave-divider svg {
   position: relative;
   display: block;
@@ -227,8 +232,19 @@
   fill: var(--bg-color);
 }
 
+/* Original alt wave for the hero section */
 .wave-alt .shape-fill {
   fill: var(--bg-color-alt);
+}
+
+/* New class specifically for the dashboard section wave */
+.wave-bottom-flipped.wave-alt .shape-fill {
+  fill: var(--primary-soft-3);
+}
+
+/* Default shape fill for non-classified wave dividers - matches features section */
+.wave-divider:not(.wave-white):not(.wave-alt):not(.wave-primary) .shape-fill {
+  fill: var(--bg-color);
 }
 
 .wave-primary .shape-fill {
@@ -239,8 +255,17 @@
   fill: var(--bg-color);
 }
 
+/* Dark mode styles */
 [data-theme="dark"] .wave-alt .shape-fill {
   fill: var(--bg-color-alt);
+}
+
+[data-theme="dark"] .wave-bottom-flipped.wave-alt .shape-fill {
+  fill: var(--bg-color-dark);
+}
+
+[data-theme="dark"] .wave-divider:not(.wave-white):not(.wave-alt):not(.wave-primary) .shape-fill {
+  fill: var(--bg-color);
 }
 
 [data-theme="dark"] .wave-primary .shape-fill {
@@ -968,4 +993,111 @@ section:last-child {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
   box-shadow: 0 0 0 5px rgba(255, 155, 14, 0.2);
+}
+
+/* Background Patterns */
+.bg-pattern {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.bg-dots {
+    background-image: radial-gradient(#4a6cf7 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.bg-grid {
+    background-image: linear-gradient(to right, #4a6cf7 1px, transparent 1px),
+                      linear-gradient(to bottom, #4a6cf7 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+/* Shape Elements */
+.shape {
+    position: absolute;
+    z-index: 0;
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.shape-circle {
+    border-radius: 50%;
+    background-color: #4a6cf7;
+}
+
+.shape-dollar {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a6cf7;
+    font-size: 24px;
+    opacity: 0.3;
+}
+
+.shape-small {
+    width: 60px;
+    height: 60px;
+}
+
+.shape-medium {
+    width: 120px;
+    height: 120px;
+}
+
+.shape-large {
+    width: 200px;
+    height: 200px;
+}
+
+/* Benefits Showcase Shapes */
+.benefits-shape-1 {
+    top: 5%;
+    right: 10%;
+    animation: float 8s ease-in-out infinite;
+}
+
+.benefits-shape-2 {
+    bottom: 15%;
+    left: 5%;
+    animation: float 6s ease-in-out infinite 1s;
+}
+
+/* Features Radial Shapes */
+.features-shape-1 {
+    top: 10%;
+    left: 10%;
+    animation: pulse 8s ease-in-out infinite;
+}
+
+.features-shape-2 {
+    bottom: 10%;
+    right: 10%;
+    animation: pulse 6s ease-in-out infinite 1s;
+}
+
+/* Animations */
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Section Enhancement */
+.section-enhanced {
+    position: relative;
+    overflow: hidden;
 } 
